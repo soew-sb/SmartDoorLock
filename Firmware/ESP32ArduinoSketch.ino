@@ -73,6 +73,7 @@ void loop()
             lcd.setCursor(0, 0);
             lcd.print("Enter PIN:");
             lastKeypressTime = millis();
+            // return;
         }
 
         // If any key other than '0' is pressed, start blinking "Press 0!"
@@ -112,6 +113,8 @@ void loop()
             lcd.setCursor(0, 1);
             lcd.print("Press 0 to unlock");
         }
+
+        // return; // Exit the loop to avoid further processing while in welcomeScreen
     }
 
     // Handle PIN entry
@@ -139,8 +142,8 @@ void loop()
             }
             inputCode = ""; // Reset the code after entry
         }
-        else if (key == '')
-        { // '' to clear the input
+        else if (key == '*')
+        { // '*' to clear the input
             inputCode = "";
             lcd.setCursor(0, 1);
             lcd.print("                "); // Clear the second row on LCD
