@@ -1,62 +1,32 @@
 @startuml
-!theme plain
-skinparam defaultTextAlignment center
-
 start
-:Initialize Serial, I2C, LCD;
-:Configure Pins;
+
+:Initialize System;
+
 :Show Welcome Screen;
 
-repeat
-  :Read Keypad Input;
+if (Press '0') then (yes)
+    :Enter PIN;
 
-  if (Welcome Screen Mode?) then (yes)
-    if (Key is '0'?) then (yes)
-      :Clear Screen;
-      :Show "Enter PIN:";
-      :Start Timer;
-      :Set Welcome Screen = false;
-    elseif (Any Other Key?) then (yes)
-      :Enable Blink Mode;
-      if (Blink Timer > 500ms?) then (yes)
-        :Toggle Blink State;
-        :Update Welcome Message;
-      endif
-    endif
-  else (no)
-    if (Key Pressed?) then (yes)
-      :Show "*" on LCD;
-      :Update Last Keypress Time;
-      
-      if (Key is '#'?) then (yes)
-        if (PIN == PASSWORD?) then (yes)
-          :Unlock Door;
-          :Show Access Granted;
-          :Turn On Green LED;
-          :Wait 5 Seconds;
-          :Lock Door;
-          :Turn Off Green LED;
-          :Show Welcome Screen;
+    if (PIN Correct?) then (yes)
+        :Unlock Door;
+        :Wait 10 seconds;
+    else (no)
+        if (Attempts < 3?) then (yes)
+            :Show Remaining Attempts;
         else (no)
-          :Show Access Denied;
-          :Turn On Red LED;
-          :Wait 2 Seconds;
-          :Turn Off Red LED;
-          :Show Welcome Screen;
+            :Generate & Send OTP;
+            :Enter OTP;
+
+            if (OTP Valid?) then (yes)
+                :Unlock Door;
+                :Wait 10 seconds;
+            else (no)
+                :Show Access Denied;
+                :Wait 2 seconds;
+            endif
         endif
-      else (no)
-        :Add Key to Input Code;
-      endif
     endif
-    
-    if (No Input Timeout?) then (yes)
-      :Show Timeout;
-      :Turn On Red LED;
-      :Wait 2 Seconds;
-      :Turn Off Red LED;
-      :Show Welcome Screen;
-    endif
-  endif
-repeat while (true)
+endif
 
 @enduml
